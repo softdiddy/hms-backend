@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model State {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  lgas  LGA[]
+  users User[]
+}
+
+model LGA {
+  id      Int    @id @default(autoincrement())
+  name    String
+  stateId Int
+  state   State  @relation(fields: [stateId], references: [id])
+  users   User[]
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  phoneNumber    String
+  password       String
+  role           Role
+  stateId        Int?
+  lgaId          Int?
+  facilityId     Int?
+  specialization String?  // only for doctors
+  forceChangePwd Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  state State? @relation(fields: [stateId], references: [id])
+  lga   LGA?   @relation(fields: [lgaId], references: [id])
+}
+
+enum Role {
+  SUPER_ADMIN
+  STATE_ADMIN
+  LGA_ADMIN
+  FACILITY_ADMIN
+  DOCTOR
+  NURSE
+  LAB_ATTENDANT
+  STORE_ADMIN
+  PHARMACIST
+}
