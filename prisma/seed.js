@@ -7,7 +7,7 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   // 1️⃣ Create States
-  const states = await prisma.state.createMany({
+  await prisma.state.createMany({
     data: [
       { name: "Lagos" },
       { name: "Abuja" },
@@ -47,6 +47,7 @@ async function main() {
       specialization: "Cardiology",
       stateId: lagos.id,
       lgaId: ikeja.id,
+      role: "DOCTOR", 
     },
     {
       name: "Dr. Jane Smith",
@@ -55,6 +56,7 @@ async function main() {
       specialization: "Neurology",
       stateId: abuja.id,
       lgaId: gwagwalada.id,
+      role: "DOCTOR", 
     },
     {
       name: "Dr. Ahmed Musa",
@@ -63,18 +65,29 @@ async function main() {
       specialization: "Pediatrics",
       stateId: kano.id,
       lgaId: nassarawa.id,
+      role: "DOCTOR", 
     },
+    {
+      name: "Dr. Fatima Bello",
+      email: "",
+      phoneNumber: "08044444444",
+      specialization: "Gynecology",
+      stateId: lagos.id,
+      lgaId: ikeja.id,
+      role: "ADMIN", 
+    }
   ];
 
   for (const doc of doctors) {
     const hashedPassword = await bcrypt.hash(doc.phoneNumber, 10);
+
     await prisma.user.upsert({
       where: { email: doc.email },
       update: {},
       create: {
         ...doc,
         password: hashedPassword,
-        role: "DOCTOR",
+        
       },
     });
   }
